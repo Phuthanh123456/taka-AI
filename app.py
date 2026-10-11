@@ -403,7 +403,7 @@ with st.container(key='workspace'):
 
     with detail_column, st.container(key='panel_detail'):
         if full_scene:
-            st.html('<div class="pane-heading"><h2>LIVE · Viewer view</h2><span>Chat and offers</span></div>')
+            st.html('<div class="pane-heading"><h2>LIVE</h2><span>Chat and offers</span></div>')
             buyer_product_id = selected['comment']['active_product_id'] if selected else 'SUN_B'
             approved_offer = next((faq for faq in bundle['faqs']
                                    if faq['product_id'] == buyer_product_id and faq.get('offer')), None)
@@ -411,11 +411,14 @@ with st.container(key='workspace'):
                                        phone_image_url, approved_offer))
             with st.container(key='buyer_bottom_actions'):
                 with st.form('buyer_comment_form', clear_on_submit=True):
-                    buyer_text = st.text_input('Ask as a viewer', max_chars=220,
-                                               placeholder=('Ask about Sunscreen B…' if api_key
-                                                            else 'Connect Gemini to comment'))
-                    buyer_sent = st.form_submit_button('Send', use_container_width=True,
-                                                       disabled=not bool(api_key))
+                    buyer_input_col, buyer_send_col = st.columns([0.74, 0.26], gap='small')
+                    with buyer_input_col:
+                        buyer_text = st.text_input('Ask as a viewer', max_chars=220,
+                                                   placeholder=('Ask about Sunscreen B…' if api_key
+                                                                else 'Connect Gemini to comment'))
+                    with buyer_send_col:
+                        buyer_sent = st.form_submit_button('Send', use_container_width=True,
+                                                           disabled=not bool(api_key))
                 with st.container(key='buyer_product_action'):
                     in_cart = st.session_state.get(f'buyer_cart_{scene}', False)
                     with st.popover('Cart' if in_cart else 'Shop', use_container_width=False):

@@ -1,0 +1,21 @@
+{
+  "demo_only": true,
+  "group_window_seconds": 60,
+  "moderator_timeout_seconds": 45,
+  "auto_reply_conditions": [
+    "product_resolved",
+    "faq_exists",
+    "faq_auto_reply_allowed",
+    "not_personal_or_safety_assessment"
+  ],
+  "escalate_categories": [
+    "ambiguous",
+    "personal_advice",
+    "safety_assessment",
+    "missing_knowledge",
+    "system_failure"
+  ],
+  "delivery_note": "Sent in simulated feed does not establish that a viewer read or resolved the question.",
+  "host_prompt_unique_viewers": 3,
+  "runtime_must_not_load_evaluation": true
+}

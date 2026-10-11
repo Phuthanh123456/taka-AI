@@ -1,0 +1,25 @@
+[
+  {
+    "product_id": "SUN_B",
+    "name": "Kem chống nắng B — sản phẩm giả định",
+    "category": "Health & Beauty",
+    "aliases": [
+      "kem B",
+      "kem chống nắng B",
+      "chống nắng B",
+      "kcn B",
+      "kem chống nắng"
+    ],
+    "is_fictional": true,
+    "facts": {
+      "volume": "50 ml",
+      "label_spf": "SPF 50",
+      "illustrative_ingredients": [
+        "Aqua",
+        "Glycerin",
+        "Zinc Oxide"
+      ],
+      "note": "Dữ liệu giả định để minh họa luồng demo; danh sách thành phần chưa phải công thức đầy đủ và không phải kết luận về độ an toàn hoặc hiệu quả."
+    }
+  }
+]

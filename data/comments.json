@@ -1,0 +1,386 @@
+[
+  {
+    "comment_id": "C001",
+    "at_seconds": 0,
+    "user_id": "u01",
+    "display_name": "Linh",
+    "active_product_id": "SUN_B",
+    "text": "Kem chống nắng B có thành phần gì vậy shop?"
+  },
+  {
+    "comment_id": "C002",
+    "at_seconds": 5,
+    "user_id": "u02",
+    "display_name": "Minh",
+    "active_product_id": "SUN_B",
+    "text": "Thành phần công bố của kem B gồm những chất nào?"
+  },
+  {
+    "comment_id": "C003",
+    "at_seconds": 10,
+    "user_id": "u03",
+    "display_name": "An",
+    "active_product_id": "SUN_B",
+    "text": "Cho mình xin danh sách thành phần kem chống nắng B với."
+  },
+  {
+    "comment_id": "C004",
+    "at_seconds": 15,
+    "user_id": "u04",
+    "display_name": "Hà",
+    "active_product_id": "SUN_B",
+    "text": "KCN B tp gồm những gì vậy shop?"
+  },
+  {
+    "comment_id": "C005",
+    "at_seconds": 20,
+    "user_id": "u01",
+    "display_name": "Linh",
+    "active_product_id": "SUN_B",
+    "text": "Dữ liệu kem B liệt kê những thành phần nào?"
+  },
+  {
+    "comment_id": "C006",
+    "at_seconds": 25,
+    "user_id": "u24",
+    "display_name": "Khánh",
+    "active_product_id": "SUN_B",
+    "text": "Kem B có thành phần nào vậy ạ?"
+  },
+  {
+    "comment_id": "C007",
+    "at_seconds": 30,
+    "user_id": "u25",
+    "display_name": "Trang",
+    "active_product_id": "SUN_B",
+    "text": "Bảng thành phần kem chống nắng B gồm những gì?"
+  },
+  {
+    "comment_id": "C008",
+    "at_seconds": 35,
+    "user_id": "u26",
+    "display_name": "Duy",
+    "active_product_id": "SUN_B",
+    "text": "Mình muốn xem các thành phần được công bố của kem B."
+  },
+  {
+    "comment_id": "C009",
+    "at_seconds": 40,
+    "user_id": "u27",
+    "display_name": "Hân",
+    "active_product_id": "SUN_B",
+    "text": "Da nhạy cảm của mình dùng kem này có hợp không?"
+  },
+  {
+    "comment_id": "C010",
+    "at_seconds": 45,
+    "user_id": "u23",
+    "display_name": "My",
+    "active_product_id": "SUN_B",
+    "text": "Kem chống nắng B có những thành phần gì?"
+  },
+  {
+    "comment_id": "C011",
+    "at_seconds": 50,
+    "user_id": "u28",
+    "display_name": "Kiên",
+    "active_product_id": "SUN_B",
+    "text": "SPF kem B bao nhiêu vậy shop?"
+  },
+  {
+    "comment_id": "C012",
+    "at_seconds": 55,
+    "user_id": "u05",
+    "display_name": "Vy",
+    "active_product_id": "SUN_B",
+    "text": "Trên nhãn kem chống nắng B ghi SPF mấy?"
+  },
+  {
+    "comment_id": "C013",
+    "at_seconds": 60,
+    "user_id": "u06",
+    "display_name": "Nam",
+    "active_product_id": "SUN_B",
+    "text": "Tuýp kem chống nắng B dung tích bao nhiêu ml?"
+  },
+  {
+    "comment_id": "C014",
+    "at_seconds": 65,
+    "user_id": "u07",
+    "display_name": "Mai",
+    "active_product_id": "SUN_B",
+    "text": "Kem B bao nhiêu ml vậy?"
+  },
+  {
+    "comment_id": "C015",
+    "at_seconds": 70,
+    "user_id": "u08",
+    "display_name": "Phúc",
+    "active_product_id": "SUN_B",
+    "text": "Một tuýp chống nắng B là 50 ml đúng không?"
+  },
+  {
+    "comment_id": "C016",
+    "at_seconds": 75,
+    "user_id": "u09",
+    "display_name": "Yến",
+    "active_product_id": "SUN_B",
+    "text": "Trong thành phần có cồn không shop?"
+  },
+  {
+    "comment_id": "C017",
+    "at_seconds": 80,
+    "user_id": "u10",
+    "display_name": "Khoa",
+    "active_product_id": "SUN_B",
+    "text": "Kem này có hương liệu không?"
+  },
+  {
+    "comment_id": "C018",
+    "at_seconds": 85,
+    "user_id": "u11",
+    "display_name": "Thảo",
+    "active_product_id": "SUN_B",
+    "text": "Aqua, Glycerin với Zinc Oxide có đủ thành phần chưa?"
+  },
+  {
+    "comment_id": "C019",
+    "at_seconds": 90,
+    "user_id": "u12",
+    "display_name": "Hải",
+    "active_product_id": "SUN_B",
+    "text": "Kem chống nắng B mua kèm món gì thì được giá tốt hơn?"
+  },
+  {
+    "comment_id": "C020",
+    "at_seconds": 95,
+    "user_id": "u23",
+    "display_name": "My",
+    "active_product_id": "SUN_B",
+    "text": "Nếu mua combo kem B với sữa rửa mặt C thì tiết kiệm bao nhiêu?"
+  },
+  {
+    "comment_id": "C021",
+    "at_seconds": 100,
+    "user_id": "u13",
+    "display_name": "Quân",
+    "active_product_id": "SUN_B",
+    "text": "Kem B có Zinc Oxide không?"
+  },
+  {
+    "comment_id": "C022",
+    "at_seconds": 105,
+    "user_id": "u14",
+    "display_name": "Bình",
+    "active_product_id": "SUN_B",
+    "text": "Mua kem B cùng sữa rửa mặt C có combo ưu đãi không shop?"
+  },
+  {
+    "comment_id": "C023",
+    "at_seconds": 110,
+    "user_id": "u15",
+    "display_name": "Châu",
+    "active_product_id": "SUN_B",
+    "text": "Bôi lên da đang kích ứng có sao không?"
+  },
+  {
+    "comment_id": "C024",
+    "at_seconds": 115,
+    "user_id": "u16",
+    "display_name": "Diễm",
+    "active_product_id": "SUN_B",
+    "text": "Combo kem chống nắng B với sữa rửa mặt C giá bao nhiêu so với mua lẻ?"
+  },
+  {
+    "comment_id": "C025",
+    "at_seconds": 120,
+    "user_id": "u23",
+    "display_name": "My",
+    "active_product_id": "SUN_B",
+    "text": "Thành phần kem chống nắng B là gì vậy shop?"
+  },
+  {
+    "comment_id": "C026",
+    "at_seconds": 125,
+    "user_id": "u17",
+    "display_name": "Oanh",
+    "active_product_id": "SUN_B",
+    "text": "KCN B có các thành phần nào vậy?"
+  },
+  {
+    "comment_id": "C027",
+    "at_seconds": 130,
+    "user_id": "u18",
+    "display_name": "Tú",
+    "active_product_id": "SUN_B",
+    "text": "Danh sách thành phần trong dữ liệu của kem B gồm những gì?"
+  },
+  {
+    "comment_id": "C028",
+    "at_seconds": 135,
+    "user_id": "u19",
+    "display_name": "Ngọc",
+    "active_product_id": "SUN_B",
+    "text": "Có thể cho mình xem danh sách thành phần không?"
+  },
+  {
+    "comment_id": "C029",
+    "at_seconds": 140,
+    "user_id": "u23",
+    "display_name": "My",
+    "active_product_id": "SUN_B",
+    "text": "Vậy kem B còn những thành phần nào nữa?"
+  },
+  {
+    "comment_id": "C030",
+    "at_seconds": 145,
+    "user_id": "u20",
+    "display_name": "Nhi",
+    "active_product_id": "SUN_B",
+    "text": "Kem B có thành phần gì shop?"
+  },
+  {
+    "comment_id": "C031",
+    "at_seconds": 150,
+    "user_id": "u21",
+    "display_name": "Hương",
+    "active_product_id": "SUN_B",
+    "text": "Da đang kích ứng có dùng kem chống nắng này được không?"
+  },
+  {
+    "comment_id": "C032",
+    "at_seconds": 155,
+    "user_id": "u22",
+    "display_name": "Liên",
+    "active_product_id": "SUN_B",
+    "text": "Mình đang mang thai thì có dùng sản phẩm này được không?"
+  },
+  {
+    "comment_id": "C033",
+    "at_seconds": 160,
+    "user_id": "u29",
+    "display_name": "Vân",
+    "active_product_id": "SUN_B",
+    "text": "Kem B dung tích bao nhiêu ml vậy?"
+  },
+  {
+    "comment_id": "C034",
+    "at_seconds": 165,
+    "user_id": "u30",
+    "display_name": "Thi",
+    "active_product_id": "SUN_B",
+    "text": "Tuýp chống nắng này còn hàng không shop?"
+  },
+  {
+    "comment_id": "C035",
+    "at_seconds": 170,
+    "user_id": "u31",
+    "display_name": "Đạt",
+    "active_product_id": "SUN_B",
+    "text": "SPF của kem chống nắng B là bao nhiêu?"
+  },
+  {
+    "comment_id": "C036",
+    "at_seconds": 175,
+    "user_id": "u32",
+    "display_name": "Phương",
+    "active_product_id": "SUN_B",
+    "text": "Kem này có an toàn tuyệt đối cho mọi loại da không?"
+  },
+  {
+    "comment_id": "C037",
+    "at_seconds": 180,
+    "user_id": "u33",
+    "display_name": "Tâm",
+    "active_product_id": "SUN_B",
+    "text": "Kem B có Niacinamide trong thành phần không?"
+  },
+  {
+    "comment_id": "C038",
+    "at_seconds": 185,
+    "user_id": "u34",
+    "display_name": "Sơn",
+    "active_product_id": "SUN_B",
+    "text": "Tuýp kem B ghi 50 ml phải không?"
+  },
+  {
+    "comment_id": "C039",
+    "at_seconds": 190,
+    "user_id": "u35",
+    "display_name": "Bảo",
+    "active_product_id": "SUN_B",
+    "text": "Đẹp quá shop ơi!"
+  },
+  {
+    "comment_id": "C040",
+    "at_seconds": 195,
+    "user_id": "u36",
+    "display_name": "Quỳnh",
+    "active_product_id": "SUN_B",
+    "text": "Giá kem B sau mã giảm còn bao nhiêu?"
+  },
+  {
+    "comment_id": "C041",
+    "at_seconds": 200,
+    "user_id": "u23",
+    "display_name": "My",
+    "active_product_id": "SUN_B",
+    "text": "Da mình dễ nổi mụn, dùng kem này được không?"
+  },
+  {
+    "comment_id": "C042",
+    "at_seconds": 205,
+    "user_id": "u37",
+    "display_name": "Long",
+    "active_product_id": "SUN_B",
+    "text": "SPF 50 có đảm bảo không bị cháy nắng cả ngày không?"
+  },
+  {
+    "comment_id": "C043",
+    "at_seconds": 210,
+    "user_id": "u38",
+    "display_name": "Trâm",
+    "active_product_id": "SUN_B",
+    "text": "Bảng thành phần có Aqua và Glycerin không?"
+  },
+  {
+    "comment_id": "C044",
+    "at_seconds": 215,
+    "user_id": "u39",
+    "display_name": "Đức",
+    "active_product_id": "SUN_B",
+    "text": "Mình cần danh sách thành phần đầy đủ của sản phẩm."
+  },
+  {
+    "comment_id": "C045",
+    "at_seconds": 220,
+    "user_id": "u40",
+    "display_name": "Tuấn",
+    "active_product_id": "SUN_B",
+    "text": "Đơn hàng kem chống nắng của mình giao tới đâu rồi?"
+  },
+  {
+    "comment_id": "C046",
+    "at_seconds": 225,
+    "user_id": "u41",
+    "display_name": "Châu",
+    "active_product_id": "SUN_B",
+    "text": "Xin chào!"
+  },
+  {
+    "comment_id": "C047",
+    "at_seconds": 230,
+    "user_id": "u42",
+    "display_name": "Huy",
+    "active_product_id": "SUN_B",
+    "text": "Trong dữ liệu kem chống nắng B có những thành phần nào?"
+  },
+  {
+    "comment_id": "C048",
+    "at_seconds": 235,
+    "user_id": "u43",
+    "display_name": "Bình",
+    "active_product_id": "SUN_B",
+    "text": "Kem chống nắng B gồm thành phần gì thế?"
+  }
+]

@@ -1,0 +1,66 @@
+[
+  {
+    "faq_id": "B_INGREDIENTS",
+    "product_id": "SUN_B",
+    "topic": "Thành phần công bố",
+    "question": "Kem chống nắng B có những thành phần nào trong dữ liệu demo?",
+    "similar_questions": [
+      "kem B có thành phần gì",
+      "thành phần kem chống nắng B",
+      "kcn B tp gồm những gì",
+      "cho xem danh sách thành phần"
+    ],
+    "approved_answer": "Dữ liệu minh họa của kem chống nắng B liệt kê Aqua, Glycerin và Zinc Oxide. Đây chưa phải danh sách công thức đầy đủ hoặc kết luận về độ an toàn.",
+    "auto_reply_allowed": true,
+    "approved_for": "fictional_demo_only"
+  },
+  {
+    "faq_id": "B_SPF",
+    "product_id": "SUN_B",
+    "topic": "Chỉ số SPF trên nhãn",
+    "question": "Kem chống nắng B ghi SPF bao nhiêu trên nhãn?",
+    "similar_questions": [
+      "spf kem B bao nhiêu",
+      "kem chống nắng B spf mấy",
+      "chỉ số spf trên nhãn"
+    ],
+    "approved_answer": "Dữ liệu sản phẩm giả định ghi SPF 50 trên nhãn. Chỉ số trên nhãn không phải cam kết bảo vệ tuyệt đối hoặc thay thế hướng dẫn sử dụng.",
+    "auto_reply_allowed": true,
+    "approved_for": "fictional_demo_only"
+  },
+  {
+    "faq_id": "B_VOLUME",
+    "product_id": "SUN_B",
+    "topic": "Dung tích",
+    "question": "Kem chống nắng B có dung tích bao nhiêu?",
+    "similar_questions": [
+      "kem B bao nhiêu ml",
+      "tuýp chống nắng bao nhiêu ml",
+      "dung tích kem B"
+    ],
+    "approved_answer": "Dữ liệu sản phẩm giả định ghi dung tích 50 ml bạn nhé.",
+    "auto_reply_allowed": true,
+    "approved_for": "fictional_demo_only"
+  },
+  {
+    "faq_id": "B_COMBO",
+    "product_id": "SUN_B",
+    "topic": "Combo ưu đãi",
+    "question": "Mua kem chống nắng B cùng sản phẩm nào để tiết kiệm hơn?",
+    "similar_questions": [
+      "mua kem B kèm gì để được giá tốt",
+      "combo kem chống nắng B với sữa rửa mặt C",
+      "combo tiết kiệm bao nhiêu so với mua lẻ",
+      "mua kem B cùng món nào hời hơn"
+    ],
+    "approved_answer": "Bạn có thể mua kem chống nắng B cùng sữa rửa mặt C theo combo 259.000đ. Giá mua lẻ là 189.000đ + 99.000đ = 288.000đ, nên combo tiết kiệm 29.000đ trong kịch bản phiên này.",
+    "auto_reply_allowed": true,
+    "approved_for": "fictional_demo_only",
+    "offer": {
+      "companion_product": "Sữa rửa mặt C",
+      "primary_price_vnd": 189000,
+      "companion_price_vnd": 99000,
+      "combo_price_vnd": 259000
+    }
+  }
+]

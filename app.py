@@ -11,14 +11,14 @@ from data_loader import load_bundle
 from inbox_ui import chip, context_markup, conversation_markup, host_hint_markup, status_view
 from viewer_live_ui import buyer_phone_markup, format_vnd
 from presentation import (SCENES, activity_trend_markup, classification_summary_markup,
-                          clock_text, dashboard_metrics, e, prepare_scene,
+                          clock_text, dashboard_metrics, e, faq_topic_label, product_label, prepare_scene,
                           routing_breakdown_markup, scene_bundle)
 from replay import advance_time, load_next, new_session
 from workflow import AI_REPLIED, MOD_WAITING, MOD_WORKING, claim, host_prompts, is_overdue, moderator_reply, process_comment, refer
 
 
 ROOT = Path(__file__).resolve().parent
-st.set_page_config(page_title="TakaAI · Bảng điều khiển LIVE", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="TakaAI · LIVE Dashboard", layout="wide", initial_sidebar_state="expanded")
 st.html('<style>' + (ROOT / 'dashboard.css').read_text(encoding='utf-8-sig') + '</style>')
 
 
@@ -71,7 +71,7 @@ def moderation_actions(selected, state, moderator_name):
         return
     cid = selected['comment_id']
     if selected['status'] == MOD_WAITING:
-        if st.button('Nhận xử lý', key=f'task_claim_{cid}', type='primary', use_container_width=True):
+        if st.button('Claim case', key=f'task_claim_{cid}', type='primary', use_container_width=True):
             try:
                 claim(state, cid, moderator_name)
                 st.rerun()
@@ -79,24 +79,24 @@ def moderation_actions(selected, state, moderator_name):
                 st.error(str(exc))
     elif selected['status'] == MOD_WORKING:
         with st.form(f'task_reply_{cid}'):
-            reply_text = st.text_area('Phản hồi của người hỗ trợ', key=f'task_text_{cid}', height=80,
-                                      placeholder='Nhập câu trả lời cho người xem…')
-            if st.form_submit_button('Gửi phản hồi', use_container_width=True):
+            reply_text = st.text_area('Moderator reply', key=f'task_text_{cid}', height=80,
+                                      placeholder='Enter your reply to the viewer…')
+            if st.form_submit_button('Send reply', use_container_width=True):
                 try:
                     moderator_reply(state, cid, reply_text)
                     st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
-        with st.popover('Chuyển chuyên môn'):
-            note = st.text_input('Nội dung cần xác minh', key=f'task_note_{cid}')
-            if st.button('Ghi nhận chuyển chuyên môn', key=f'task_refer_{cid}'):
+        with st.popover('Escalate for review'):
+            note = st.text_input('Details to verify', key=f'task_note_{cid}')
+            if st.button('Submit for review', key=f'task_refer_{cid}'):
                 try:
                     refer(state, cid, note)
                     st.rerun()
                 except ValueError as exc:
                     st.error(str(exc))
         if selected.get('referral'):
-            st.info(f"Đã chuyển xác minh: {selected['referral']}")
+            st.info(f"Sent for review: {selected['referral']}")
 
 
 def classification_key(record):
@@ -112,7 +112,7 @@ try:
                              for name in ('products', 'faqs', 'comments', 'policy'))
     bundle = get_bundle(data_fingerprint)
 except (OSError, ValueError, KeyError, AssertionError, TypeError) as exc:
-    st.error(f"Không tải được dữ liệu: {exc}")
+    st.error(f"Could not load data: {exc}")
     st.stop()
 if st.session_state.get('loaded_data_fingerprint') != data_fingerprint:
     clear_task_widgets()
@@ -142,7 +142,7 @@ state = st.session_state.scene_sessions[scene]
 st.session_state.live_session = state
 source = scene_bundle(bundle, scene)
 policy = bundle['policy']
-products = {item['product_id']: item['name'].split(' — ')[0] for item in bundle['products']}
+products = {item['product_id']: product_label(item['product_id'], item['name']) for item in bundle['products']}
 
 if not st.session_state.sidebar_open:
     st.html('<style>[data-testid="stSidebar"]{display:none!important;}</style>')
@@ -166,17 +166,17 @@ else:
 with st.sidebar:
     mascot = base64.b64encode((ROOT / 'assets' / 'takaai-mascot.png').read_bytes()).decode('ascii')
     st.html(f'''<div class="brand-lockup"><img class="brand-photo" src="data:image/png;base64,{mascot}" alt="Mascot AI TakaAI" />
-      <span><strong>TakaAI</strong><small>HỘP THƯ VẬN HÀNH</small></span></div>''')
-    st.html('<div class="sidebar-section-label">KỊCH BẢN</div>')
+      <span><strong>TakaAI</strong><small>OPERATIONS INBOX</small></span></div>''')
+    st.html('<div class="sidebar-section-label">SCENARIOS</div>')
     scene_order = ['Phiên đầy đủ', *[name for name in SCENES if name != 'Phiên đầy đủ']]
-    st.radio('Chọn kịch bản', scene_order, format_func=lambda value: {
-        '01 · Gom FAQ': 'Gom câu hỏi',
-        '02 · Moderator': 'Cần người hỗ trợ',
-        '03 · Hỏi tiếp': 'Theo dõi hỏi tiếp',
-        'Phiên đầy đủ': 'Toàn bộ phiên',
+    st.radio('Choose scenario', scene_order, format_func=lambda value: {
+        '01 · Gom FAQ': 'Group questions',
+        '02 · Moderator': 'Moderator support',
+        '03 · Hỏi tiếp': 'Follow-up questions',
+        'Phiên đầy đủ': 'Full session',
     }[value], key='scene_choice', label_visibility='collapsed')
-    st.html(f'<div class="sidebar-scene"><span>ĐANG XEM</span><strong>{e(SCENES[scene]["title"])}</strong></div>')
-    if st.session_state.sidebar_open and st.button('Thu gọn menu', key='sidebar_toggle', use_container_width=True, type='tertiary'):
+    st.html(f'<div class="sidebar-scene"><span>NOW VIEWING</span><strong>{e(SCENES[scene]["title"])}</strong></div>')
+    if st.session_state.sidebar_open and st.button('Collapse menu', key='sidebar_toggle', use_container_width=True, type='tertiary'):
         st.session_state.sidebar_open = False
         st.rerun()
 if st.session_state.scene_choice != scene:
@@ -187,45 +187,45 @@ if st.session_state.sidebar_open:
 else:
     header_toggle, header_main = st.columns([0.12, 0.88], gap='small', vertical_alignment='center')
     with header_toggle:
-        if st.button('Hiện menu', key='sidebar_toggle', type='tertiary'):
+        if st.button('Show menu', key='sidebar_toggle', type='tertiary'):
             st.session_state.sidebar_open = True
             st.rerun()
 with header_main:
-    visible_mode = f"Gemini · {state['model'] or model}" if api_key else 'Chưa kết nối Gemini'
-    st.html(f'''<header class="inbox-header"><div><span class="overline">TAKAAI / PHIÊN TRỰC TIẾP</span>
-      <h1>Bảng điều khiển LIVE <span class="live-indicator"><i></i> LIVE</span></h1></div>
+    visible_mode = f"Gemini · {state['model'] or model}" if api_key else 'Gemini not connected'
+    st.html(f'''<header class="inbox-header"><div><span class="overline">TAKAAI / LIVE SESSION</span>
+      <h1>LIVE Dashboard <span class="live-indicator"><i></i> LIVE</span></h1></div>
       <div class="session-meta"><span>{e(visible_mode)}</span><strong>{clock_text(state['demo_time'])}</strong></div></header>''')
 
 toolbar_main, toolbar_tools, toolbar_settings, toolbar_guide = st.columns([1.7, 1.0, 1.0, 1.0], gap='small')
 with toolbar_main:
-    prepare_clicked = st.button('Chạy kịch bản', key='prepare_scene', type='primary', use_container_width=True)
+    prepare_clicked = st.button('Run scenario', key='prepare_scene', type='primary', use_container_width=True)
 with toolbar_tools:
-    with st.popover('Điều khiển phiên', use_container_width=True):
-        load_clicked = st.button('Nạp 5 bình luận', key='load_next', disabled=state['next_index'] >= len(source['comments']), use_container_width=True)
-        time_clicked = st.button('Tăng 30 giây', key='advance_time', use_container_width=True)
-        reset_clicked = st.button('Chạy lại từ đầu', key='reset_scene', use_container_width=True)
+    with st.popover('Session controls', use_container_width=True):
+        load_clicked = st.button('Load 5 comments', key='load_next', disabled=state['next_index'] >= len(source['comments']), use_container_width=True)
+        time_clicked = st.button('Advance 30 seconds', key='advance_time', use_container_width=True)
+        reset_clicked = st.button('Restart session', key='reset_scene', use_container_width=True)
 with toolbar_settings:
-    with st.popover('Cấu hình', use_container_width=True):
-        st.markdown('**Bộ xử lý: Gemini API**')
-        moderator_name = st.text_input('Tên người hỗ trợ', value='Người điều phối', key='moderator_name')
-        live_media = st.file_uploader('Thay hình LIVE (tùy chọn)',
+    with st.popover('Settings', use_container_width=True):
+        st.markdown('**Processor: Gemini API**')
+        moderator_name = st.text_input('Moderator name', value='Moderator', key='moderator_name')
+        live_media = st.file_uploader('Replace LIVE image or video (optional)',
                                       type=['mp4', 'webm', 'mov', 'jpg', 'jpeg', 'png'],
                                       key='live_media')
-        st.caption('Gemini đọc từng comment mẫu và FAQ để chọn câu trả lời phù hợp.')
+        st.caption('Gemini classifies each sample comment against approved FAQs.')
         if not configured_api_key:
-            api_key_input = st.text_input('Khóa Gemini API', type='password',
+            api_key_input = st.text_input('Gemini API key', type='password',
                                           key='gemini_api_key_input',
-                                          placeholder='Dán khóa API tại đây')
+                                          placeholder='Paste your API key here')
             api_key = api_key_input.strip()
             if not api_key:
-                st.info('Nhập khóa để gọi Gemini. Khóa chỉ được giữ trong phiên đang mở.')
-        st.caption(f'Model dựng sẵn: {model}. Comment lấy từ data/comments.json; câu trả lời lấy từ FAQ đã duyệt.')
-        reset_all_clicked = st.button('Xóa kết quả mọi kịch bản', key='reset_all')
+                st.info('Enter a key to use Gemini. It stays only in this browser session.')
+        st.caption(f'Pretrained model: {model}. Comments come from data/comments.json; replies come from approved FAQs.')
+        reset_all_clicked = st.button('Clear all scenario results', key='reset_all')
 with toolbar_guide:
-    with st.popover('Kịch bản', use_container_width=True):
-        st.write('1. Gom câu hỏi: xem AI trả lời FAQ và gợi ý cho host.')
-        st.write('2. Cần người hỗ trợ: nhận câu hỏi, nhập và gửi phản hồi.')
-        st.write('3. Theo dõi hỏi tiếp: xem lịch sử của My và cảnh báo chờ lâu.')
+    with st.popover('Scenario guide', use_container_width=True):
+        st.write('1. Group questions: review FAQ replies and host prompts.')
+        st.write('2. Moderator support: claim a case and send a reply.')
+        st.write('3. Follow-ups: review viewer history and overdue cases.')
 
 selected_key = f'inbox_selected_{scene}'
 if reset_all_clicked:
@@ -236,10 +236,10 @@ if reset_clicked or prepare_clicked:
     clear_task_widgets()
     if prepare_clicked:
         if not api_key:
-            st.error('Chưa có khóa Gemini API. Mở Cấu hình, nhập khóa rồi chạy lại kịch bản.')
+            st.error('Gemini API key missing. Open Settings, enter a key, then run the scenario.')
         else:
             agent = GeminiAgent(api_key, model)
-            with st.spinner(f"Gemini đang phân loại {len(source['comments'])} bình luận…"):
+            with st.spinner(f"Gemini is classifying {len(source['comments'])} comments…"):
                 session = prepare_scene(bundle, scene, agent, default_mode, model)
             st.session_state.scene_sessions[scene] = session
             st.session_state[selected_key] = first_buyer_reply(session) if full_scene else first_focus(session)
@@ -252,13 +252,13 @@ if time_clicked:
     st.rerun()
 if load_clicked:
     if not api_key:
-        st.error('Chưa có khóa Gemini API. Mở Cấu hình, nhập khóa rồi nạp lại bình luận.')
+        st.error('Gemini API key missing. Open Settings, enter a key, then load comments.')
     else:
         state['mode'] = default_mode
         state['model'] = model
         agent = GeminiAgent(api_key, model)
         count_to_load = min(5, len(source['comments']) - state['next_index'])
-        with st.spinner(f"Gemini đang phân loại {count_to_load} bình luận tiếp theo…"):
+        with st.spinner(f"Gemini is classifying the next {count_to_load} comments…"):
             load_next(state, source, agent, count_to_load)
         st.session_state[selected_key] = first_buyer_reply(state) if full_scene else first_focus(state)
         st.rerun()
@@ -266,38 +266,38 @@ if load_clicked:
 records = list(state['results'].values())
 metrics = dashboard_metrics(state, policy)
 scene_total = len(source['comments']) + state.get('buyer_comment_seq', 0)
-st.html(f'''<section class="live-hero" aria-label="Tổng quan phiên LIVE">
-  <div class="hero-intro"><span class="hero-eyebrow">TỔNG QUAN PHIÊN</span>
-    <strong>Bình luận đã xử lý</strong><span>Dữ liệu từ kịch bản đang chọn</span></div>
-  <div class="hero-total"><strong>{metrics['received']}</strong><span>/ {scene_total} bình luận</span></div>
+st.html(f'''<section class="live-hero" aria-label="LIVE session overview">
+  <div class="hero-intro"><span class="hero-eyebrow">SESSION OVERVIEW</span>
+    <strong>Comments processed</strong><span>Current scenario data</span></div>
+  <div class="hero-total"><strong>{metrics['received']}</strong><span>/ {scene_total} comments</span></div>
   <div class="hero-stats">
-    <div><span>AI đã trả lời</span><strong>{metrics['ai_replied']}</strong></div>
-    <div><span>Cần hỗ trợ</span><strong>{metrics['moderator']}</strong></div>
-    <div><span>Chờ quá lâu</span><strong>{metrics['late']}</strong></div>
+    <div><span>AI replied</span><strong>{metrics['ai_replied']}</strong></div>
+    <div><span>Needs support</span><strong>{metrics['moderator']}</strong></div>
+    <div><span>Overdue</span><strong>{metrics['late']}</strong></div>
   </div></section>''')
 st.html(classification_summary_markup(state, bundle, scene_total))
 
 faq_by_id = {faq['faq_id']: faq for faq in bundle['faqs']}
-filter_labels = {'all': f"Tất cả bình luận ({len(records)})"}
+filter_labels = {'all': f"All comments ({len(records)})"}
 filter_options = ['all']
 for faq in bundle['faqs']:
     key = f"faq:{faq['faq_id']}"
     count = sum(item.get('route') == 'AUTO' and item.get('faq_id') == faq['faq_id'] for item in records)
     if count:
         filter_options.append(key)
-        filter_labels[key] = f"FAQ · {faq['topic']} ({count})"
+        filter_labels[key] = f"FAQ · {faq_topic_label(faq['topic'])} ({count})"
 moderator_count = sum(item.get('route') == 'ESCALATE' for item in records)
 ignored_count = sum(item.get('route') == 'IGNORE' for item in records)
 followup_count = sum(bool(item.get('context')) for item in records)
 if moderator_count:
     filter_options.append('moderator')
-    filter_labels['moderator'] = f'Cần moderator ({moderator_count})'
+    filter_labels['moderator'] = f'Needs moderator ({moderator_count})'
 if ignored_count:
     filter_options.append('ignore')
-    filter_labels['ignore'] = f'Không cần phản hồi ({ignored_count})'
+    filter_labels['ignore'] = f'No reply needed ({ignored_count})'
 if followup_count:
     filter_options.append('followup')
-    filter_labels['followup'] = f'Câu hỏi tiếp theo ({followup_count})'
+    filter_labels['followup'] = f'Follow-up questions ({followup_count})'
 
 filter_key = f'comment_filter_{scene}'
 page_size = 10
@@ -340,7 +340,7 @@ with st.container(key='workspace'):
     with live_column:
         if not full_scene:
             with st.container(key='panel_live'):
-                st.html('<div class="pane-heading"><h2>Khung LIVE</h2><span class="live-pane-state"><i></i> LIVE</span></div>')
+                st.html('<div class="pane-heading"><h2>LIVE view</h2><span class="live-pane-state"><i></i> LIVE</span></div>')
                 if live_media is not None:
                     if live_media.type.startswith('video/'):
                         st.video(live_media, format=live_media.type)
@@ -349,33 +349,33 @@ with st.container(key='workspace'):
                     active_comment = records[-1] if records else None
                     active_product_id = (active_comment['comment']['active_product_id'] if active_comment
                                          else source['comments'][0]['active_product_id'])
-                    product_caption = 'SẢN PHẨM ĐANG GIỚI THIỆU'
+                    product_caption = 'FEATURED PRODUCT'
                 else:
                     st.image(str(ROOT / 'assets' / 'live-health-beauty-sunscreen.png'), width='stretch')
                     active_product_id = 'SUN_B'
-                    product_caption = 'SẢN PHẨM TRONG KHUNG'
+                    product_caption = 'PRODUCT IN VIEW'
                 st.html(f'''<div class="live-product-strip"><span>{product_caption}</span>
                     <strong>{e(products.get(active_product_id, active_product_id))}</strong></div>''')
     with inbox_column, st.container(key='panel_inbox'):
-        st.html(f'<div class="pane-heading"><h2>Bình luận</h2><span>{len(records)} / {scene_total} đã xử lý</span></div>')
-        st.selectbox('Lọc comment theo nhóm', filter_options,
+        st.html(f'<div class="pane-heading"><h2>Comments</h2><span>{len(records)} / {scene_total} processed</span></div>')
+        st.selectbox('Filter comments by group', filter_options,
                      format_func=lambda value: filter_labels[value], key=filter_key,
                      label_visibility='collapsed')
         if pages > 1:
-            page = st.selectbox('Trang bình luận', range(pages),
+            page = st.selectbox('Comments page', range(pages),
                                 format_func=lambda number: f"{number * page_size + 1}–{min((number + 1) * page_size, len(filtered_records))} / {len(filtered_records)}",
                                 key=page_key, label_visibility='collapsed')
         else:
             page = 0
         visible = filtered_records[page * page_size:(page + 1) * page_size]
         if not visible:
-            st.html('<div class="inbox-empty"><strong>Chưa có bình luận</strong><p>Bấm “Chạy kịch bản” để Gemini phân loại comment mẫu.</p></div>')
+            st.html('<div class="inbox-empty"><strong>No comments yet</strong><p>Run the scenario to let Gemini classify sample comments.</p></div>')
         for item in visible:
             comment = item['comment']
             cid = item['comment_id']
             label, tone = status_view(item, state, policy)
             faq = faq_by_id.get(item.get('faq_id'))
-            category = f"FAQ · {faq['topic']}" if faq else ('Cần moderator' if item.get('route') == 'ESCALATE' else 'Không cần phản hồi')
+            category = f"FAQ · {faq_topic_label(faq['topic'])}" if faq else ('Needs moderator' if item.get('route') == 'ESCALATE' else 'No reply needed')
             row_type = 'active' if cid == selected_id else 'idle'
             with st.container(key=f'row_{row_type}_{cid}'):
                 st.html(f'''<div class="inbox-row-top"><span class="avatar-mini">{e(comment['display_name'][:1])}</span>
@@ -387,7 +387,7 @@ with st.container(key='workspace'):
 
     with detail_column, st.container(key='panel_detail'):
         if full_scene:
-            st.html('<div class="pane-heading"><h2>LIVE · Góc nhìn người xem</h2><span>Chat và ưu đãi</span></div>')
+            st.html('<div class="pane-heading"><h2>LIVE · Viewer view</h2><span>Chat and offers</span></div>')
             buyer_product_id = selected['comment']['active_product_id'] if selected else 'SUN_B'
             approved_offer = next((faq for faq in bundle['faqs']
                                    if faq['product_id'] == buyer_product_id and faq.get('offer')), None)
@@ -395,46 +395,46 @@ with st.container(key='workspace'):
                                        phone_image_url, approved_offer))
             with st.container(key='buyer_bottom_actions'):
                 with st.form('buyer_comment_form', clear_on_submit=True):
-                    buyer_text = st.text_input('Hỏi thử như người mua', max_chars=220,
-                                               placeholder=('Hỏi về kem chống nắng B…' if api_key
-                                                            else 'Kết nối Gemini để bình luận'))
-                    buyer_sent = st.form_submit_button('Gửi', use_container_width=True,
+                    buyer_text = st.text_input('Ask as a viewer', max_chars=220,
+                                               placeholder=('Ask about Sunscreen B…' if api_key
+                                                            else 'Connect Gemini to comment'))
+                    buyer_sent = st.form_submit_button('Send', use_container_width=True,
                                                        disabled=not bool(api_key))
                 with st.container(key='buyer_product_action'):
                     in_cart = st.session_state.get(f'buyer_cart_{scene}', False)
-                    with st.popover('Giỏ' if in_cart else 'Mua', use_container_width=False):
+                    with st.popover('Cart' if in_cart else 'Shop', use_container_width=False):
                         st.markdown(f"**{products.get(buyer_product_id, buyer_product_id)}**")
                         if approved_offer:
                             deal = approved_offer['offer']
                             saved = deal['primary_price_vnd'] + deal['companion_price_vnd'] - deal['combo_price_vnd']
-                            st.write(f"Mua cùng {deal['companion_product']}: {format_vnd(deal['combo_price_vnd'])}")
-                            st.caption(f"Tiết kiệm {format_vnd(saved)} so với mua lẻ.")
-                            if st.button('Thêm combo vào giỏ', key=f'buyer_cart_add_{scene}',
+                            st.write(f"Pair with Facial Cleanser C: {format_vnd(deal['combo_price_vnd'])}")
+                            st.caption(f"Save {format_vnd(saved)} compared with separate purchases.")
+                            if st.button('Add combo to cart', key=f'buyer_cart_add_{scene}',
                                          disabled=in_cart, use_container_width=True):
                                 st.session_state[f'buyer_cart_{scene}'] = True
                                 st.rerun()
                             if in_cart:
-                                st.success('Combo đã có trong giỏ hàng.')
+                                st.success('Combo added to cart.')
             if buyer_sent:
                 if not buyer_text.strip():
-                    st.warning('Nhập câu hỏi trước khi gửi.')
+                    st.warning('Enter a question before sending.')
                 else:
                     next_buyer = state.get('buyer_comment_seq', 0) + 1
                     buyer_id = f'BUY{next_buyer:03}'
                     state['demo_time'] += 1
                     buyer_comment = dict(comment_id=buyer_id, at_seconds=state['demo_time'],
-                                         user_id='buyer_demo', display_name='Bạn',
+                                         user_id='buyer_demo', display_name='You',
                                          active_product_id='SUN_B', text=buyer_text.strip())
-                    with st.spinner('TakaAI đang phân loại câu hỏi…'):
+                    with st.spinner('TakaAI is classifying the question…'):
                         process_comment(state, bundle, GeminiAgent(api_key, model), buyer_comment)
                     state['buyer_comment_seq'] = next_buyer
                     st.session_state[selected_key] = buyer_id
                     st.session_state['buyer_jump'] = dict(scene=scene, page=(len(state['results']) - 1) // page_size)
                     st.rerun()
         else:
-            st.html('<div class="pane-heading"><h2>TakaAI hỗ trợ</h2><span>Bình luận đã chọn</span></div>')
+            st.html('<div class="pane-heading"><h2>TakaAI assistant</h2><span>Selected comment</span></div>')
             if not selected:
-                st.html('<div class="detail-empty"><span class="empty-icon">○</span><h3>Chọn một bình luận để xem</h3><p>Phản hồi của AI và tác vụ hỗ trợ sẽ hiện tại đây.</p></div>')
+                st.html('<div class="detail-empty"><span class="empty-icon">○</span><h3>Select a comment</h3><p>AI replies and moderator tasks appear here.</p></div>')
             else:
                 st.html(conversation_markup(selected, state, products, policy))
                 moderation_actions(selected, state, moderator_name)
@@ -442,9 +442,9 @@ with st.container(key='workspace'):
     with context_column, st.container(key='panel_context'):
         st.html(routing_breakdown_markup(state))
         st.html(activity_trend_markup(state))
-        st.html(f'<div class="pane-heading queue-heading"><h2>Hàng chờ hỗ trợ</h2><span class="queue-count">{len(pending)}</span></div>')
+        st.html(f'<div class="pane-heading queue-heading"><h2>Support queue</h2><span class="queue-count">{len(pending)}</span></div>')
         if not pending:
-            st.html('<p class="queue-empty">Không có câu hỏi cần người hỗ trợ.</p>')
+            st.html('<p class="queue-empty">No questions need moderator support.</p>')
         for item in pending[:2]:
             comment = item['comment']
             cid = item['comment_id']
@@ -454,21 +454,21 @@ with st.container(key='workspace'):
                 st.session_state[selected_key] = cid
                 st.rerun()
         if len(pending) > 2:
-            with st.popover(f'Xem thêm {len(pending) - 2} câu hỏi', use_container_width=True):
-                choice = st.selectbox('Câu cần hỗ trợ', [item['comment_id'] for item in pending],
+            with st.popover(f'View {len(pending) - 2} more questions', use_container_width=True):
+                choice = st.selectbox('Question needing support', [item['comment_id'] for item in pending],
                                       format_func=lambda cid: f"{state['results'][cid]['comment']['display_name']} · {state['results'][cid]['comment']['text'][:48]}",
                                       key=f'task_selected_{scene}')
-                if st.button('Mở câu hỏi', key=f'task_open_{scene}'):
+                if st.button('Open question', key=f'task_open_{scene}'):
                     st.session_state[selected_key] = choice
                     st.rerun()
         if full_scene and selected and selected['status'] in (MOD_WAITING, MOD_WORKING):
-            st.html('<div class="context-divider"></div><div class="pane-heading"><h2>Xử lý câu đang chọn</h2></div>')
+            st.html('<div class="context-divider"></div><div class="pane-heading"><h2>Handle selected case</h2></div>')
             moderation_actions(selected, state, moderator_name)
-        st.html('<div class="context-divider"></div><div class="pane-heading context-heading"><h2>Ngữ cảnh AI</h2></div>')
+        st.html('<div class="context-divider"></div><div class="pane-heading context-heading"><h2>AI context</h2></div>')
         if selected:
             st.html(context_markup(selected, state, bundle, products))
         else:
-            st.html('<p class="context-placeholder">Chọn bình luận để xem FAQ và lịch sử người xem.</p>')
+            st.html('<p class="context-placeholder">Select a comment to view its FAQ and viewer history.</p>')
         prompts = host_prompts(state, policy)
         if prompts:
             related = next((group for group in prompts if selected and selected_id in group['comment_ids']), prompts[0])

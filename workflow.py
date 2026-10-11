@@ -20,20 +20,20 @@ def fallback(comment, reason):
 
 def validate_decision(decision, comment, bundle, history=None):
     if not isinstance(decision, dict) or set(decision) != set(SCHEMA["required"]):
-        raise ValueError("Sai cấu trúc JSON")
+        raise ValueError("Invalid JSON structure")
     if decision["comment_id"] != comment["comment_id"] or decision["route"] not in ("AUTO", "ESCALATE", "IGNORE"):
-        raise ValueError("Sai comment_id hoặc route")
+        raise ValueError("Invalid comment_id or route")
     if not isinstance(decision["reason"], str) or not decision["reason"].strip():
-        raise ValueError("Thiếu lý do")
+        raise ValueError("Missing reason")
     products = {p["product_id"] for p in bundle["products"]}
     faqs = {f["faq_id"]: f for f in bundle["faqs"]}
     pid, fid = decision["product_id"], decision["faq_id"]
     if pid is not None and (not isinstance(pid, str) or pid not in products):
-        raise ValueError("product_id không tồn tại")
+        raise ValueError("Unknown product_id")
     if fid is not None and (not isinstance(fid, str) or fid not in faqs):
-        raise ValueError("faq_id không tồn tại")
+        raise ValueError("Unknown faq_id")
     if fid is not None and faqs[fid]["product_id"] != pid:
-        raise ValueError("FAQ không thuộc sản phẩm")
+        raise ValueError("FAQ does not belong to this product")
     approved_combo = (decision["route"] == "AUTO" and fid in faqs
                       and bool(faqs[fid].get("offer")) and is_combo_question(comment["text"]))
     reason = scope_reason(comment["text"], allow_approved_combo=approved_combo)
@@ -41,17 +41,17 @@ def validate_decision(decision, comment, bundle, history=None):
         return fallback(comment, reason)
     if decision["route"] == "AUTO":
         if pid is None or fid is None or not faqs[fid]["auto_reply_allowed"]:
-            raise ValueError("FAQ chưa được phép tự trả lời")
+            raise ValueError("FAQ is not approved for automatic replies")
         explicit = explicit_products(comment["text"], bundle["products"])
         if explicit and explicit != {pid}:
-            raise ValueError("Sản phẩm nói rõ không khớp quyết định")
+            raise ValueError("Explicit product does not match the decision")
         if not explicit and resolve_product(comment, bundle["products"], history or []) is None:
-            return fallback(comment, "Ngữ cảnh đổi sản phẩm chưa rõ; cần người hỗ trợ xác minh.")
+            return fallback(comment, "Product context is unclear; moderator verification is needed.")
         text = normalize(comment["text"])
         if normalize(faqs[fid]["topic"]) == "thanh phan cong bo" and any(contains(text, q) for q in ["có", "không"]) and not any(contains(text, q) for q in ["gì", "nào", "danh sách", "liệt kê"]):
-            return fallback(comment, "Dữ liệu thành phần chưa đầy đủ để xác định chất cụ thể.")
+            return fallback(comment, "The ingredient list is incomplete; a specific ingredient cannot be verified.")
     elif fid is not None:
-        raise ValueError("ESCALATE/IGNORE phải có faq_id=null")
+        raise ValueError("ESCALATE/IGNORE must have faq_id=null")
     return deepcopy(decision)
 
 
@@ -76,12 +76,12 @@ def process_comment(state, bundle, agent, comment, decision_override=_USE_AGENT,
             decision = validate_decision(raw_decision, comment, bundle, history)
         except Exception as exc:
             # Do not expose provider exception text: it can contain credentials or payloads.
-            decision = fallback(comment, f"Lỗi hệ thống hoặc kết quả không hợp lệ ({type(exc).__name__}); cần người hỗ trợ.")
+            decision = fallback(comment, f"System error or invalid result ({type(exc).__name__}); moderator review is needed.")
     record.update(decision)
     if decision["route"] == "AUTO":
         faq = next(f for f in bundle["faqs"] if f["faq_id"] == decision["faq_id"])
         response = dict(response_id=f"R{len(state['responses']) + 1:03}",
-                        comment_ids=[cid], user_ids=[comment["user_id"]], author="AI / FAQ đã duyệt",
+                        comment_ids=[cid], user_ids=[comment["user_id"]], author="AI / approved FAQ",
                         text=faq["approved_answer"], at_seconds=state["demo_time"], mode=state["mode"])
         state["responses"].append(response)
         record.update(response_id=response["response_id"], status=AI_REPLIED)
@@ -121,7 +121,7 @@ def is_overdue(record, demo_time, policy):
 def claim(state, cid, moderator):
     record = state["moderator_queue"][cid]
     if record["status"] != MOD_WAITING or not moderator.strip():
-        raise ValueError("Câu chưa sẵn sàng nhận xử lý hoặc thiếu tên moderator.")
+        raise ValueError("Case is not ready to claim or moderator name is missing.")
     record.update(status=MOD_WORKING, assigned_to=moderator.strip())
     update_history(state, record)
 
@@ -129,14 +129,14 @@ def claim(state, cid, moderator):
 def refer(state, cid, note):
     record = state["moderator_queue"][cid]
     if record["status"] != MOD_WORKING or not note.strip():
-        raise ValueError("Nhận xử lý trước và nhập người phụ trách/nội dung cần kiểm tra.")
+        raise ValueError("Claim the case and enter the details to verify.")
     record["referral"] = note.strip()
 
 
 def moderator_reply(state, cid, text):
     record = state["moderator_queue"][cid]
     if record["status"] != MOD_WORKING or not text.strip():
-        raise ValueError("Nhận xử lý trước và nhập câu trả lời.")
+        raise ValueError("Claim the case before entering a reply.")
     response = dict(response_id=f"R{len(state['responses']) + 1:03}", comment_ids=[cid],
                     user_ids=[record["comment"]["user_id"]], author=record["assigned_to"],
                     text=text.strip(), at_seconds=state["demo_time"], mode="Moderator")

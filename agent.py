@@ -44,7 +44,7 @@ không tự suy đoán khuyến mãi, mã giảm giá, thời hạn hoặc tồn
  Thông số mẫu không chứng minh còn hàng; thành phần minh họa không đủ để khẳng định
  sản phẩm có hoặc không có một chất cụ thể. SPF trên nhãn không phải cam kết bảo vệ. Không dùng confidence.
 IGNORE chỉ cho lời chào/khen thuần túy, không bỏ qua câu hỏi hay khiếu nại.
-ESCALATE/IGNORE có faq_id=null. Reason ngắn gọn bằng tiếng Việt.
+ESCALATE/IGNORE có faq_id=null. Write the short reason in English.
 """
 BATCH_SYSTEM = SYSTEM + """
 Bạn nhận một lô comment theo thứ tự thời gian. Trả đúng một quyết định cho từng comment,
@@ -73,20 +73,20 @@ def scope_reason(text, allow_approved_combo=False):
     """Conservative extra guard; semantic scope is also checked by the model."""
     t = normalize(text)
     if contains(t, "thành phần") and any(contains(t, term) for term in ["đầy đủ", "toàn bộ", "công thức hoàn chỉnh"]):
-        return "Dữ liệu demo chưa có công thức đầy đủ để xác nhận toàn bộ thành phần."
+        return "The available ingredient list is incomplete."
     rules = [
-        (["bỏ qua hướng dẫn", "bỏ qua chỉ dẫn", "đổi chỉ dẫn", "tự bịa", "system prompt", "ignore instructions"], "Yêu cầu thay đổi chỉ dẫn; cần người hỗ trợ kiểm tra."),
-        (["không đúng ý", "hiểu sai", "sai rồi", "người hỗ trợ", "moderator", "gặp người", "nhân viên"], "Người xem yêu cầu hỗ trợ hoặc báo hiểu sai."),
-        (["voucher", "mã giảm", "còn hàng", "còn k", "tồn kho", "đơn hàng", "giao"], "Thiếu dữ liệu hiện hành về voucher, tồn kho hoặc đơn hàng."),
-        (["da", "mụn", "kích ứng", "điều trị", "bệnh", "sốt", "chẩn đoán", "bác sĩ", "đi khám", "nguy hiểm", "độc", "an toàn", "lâu dài", "cháy nắng", "100%", "chắc chắn", "cam kết", "đảm bảo", "bầu", "thai", "dị ứng"], "Cần tư vấn cá nhân hoặc đánh giá chuyên môn/an toàn."),
-        (["tư vấn", "chọn", "hợp với", "phù hợp", "có sao không"], "Cần tư vấn theo nhu cầu cá nhân."),
-        (["lúc nãy", "cái nãy", "bữa trước", "màu kia"], "Sản phẩm hoặc ý hỏi chưa rõ."),
+        (["bỏ qua hướng dẫn", "bỏ qua chỉ dẫn", "đổi chỉ dẫn", "tự bịa", "system prompt", "ignore instructions"], "Instruction override request; moderator review needed."),
+        (["không đúng ý", "hiểu sai", "sai rồi", "người hỗ trợ", "moderator", "gặp người", "nhân viên"], "Viewer requested support or reported a misunderstanding."),
+        (["voucher", "mã giảm", "còn hàng", "còn k", "tồn kho", "đơn hàng", "giao"], "Current voucher, stock, or order data is unavailable."),
+        (["da", "mụn", "kích ứng", "điều trị", "bệnh", "sốt", "chẩn đoán", "bác sĩ", "đi khám", "nguy hiểm", "độc", "an toàn", "lâu dài", "cháy nắng", "100%", "chắc chắn", "cam kết", "đảm bảo", "bầu", "thai", "dị ứng"], "Personal advice or professional safety assessment is needed."),
+        (["tư vấn", "chọn", "hợp với", "phù hợp", "có sao không"], "Personalized advice is needed."),
+        (["lúc nãy", "cái nãy", "bữa trước", "màu kia"], "The product or question is unclear."),
     ]
     for terms, reason in rules:
         if any(contains(t, term) for term in terms):
             return reason
     if not allow_approved_combo and any(contains(t, term) for term in ["giá", "giảm", "tiết kiệm", "hời"]):
-        return "Thiếu dữ liệu hiện hành về giá hoặc ưu đãi."
+        return "Current price or promotion data is unavailable."
     return None
 
 
@@ -129,7 +129,7 @@ class RuleAgent:
     """Limited offline rules, explicitly labelled in the UI."""
     def classify(self, comment, products, faqs, history):
         result = dict(comment_id=comment["comment_id"], route="ESCALATE",
-                      product_id=None, faq_id=None, reason="Không có FAQ chắc chắn phù hợp trong chế độ luật.")
+                      product_id=None, faq_id=None, reason="No FAQ matches with sufficient certainty.")
         product = resolve_product(comment, products, history)
         approved_combo = is_combo_question(comment["text"]) and any(
             f["product_id"] == product and f.get("offer") for f in faqs)
@@ -139,7 +139,7 @@ class RuleAgent:
         # Unaccented 'mau' collides for 'mẫu' and 'màu'; remove the product noun.
         t = normalize(comment["text"].lower().replace("mẫu", ""))
         if t.rstrip(".! ") in ["chao shop", "dep qua shop oi", "live vui qua", "xin chao", "dep qua", "cam on shop tu van de hieu qua"]:
-            return dict(result, route="IGNORE", reason="Lời chào hoặc lời khen thuần túy.")
+            return dict(result, route="IGNORE", reason="Greeting or compliment only.")
         matches = [f for f in faqs if f["product_id"] == product and f["auto_reply_allowed"]
                    and any(contains(t, term) for term in TOPICS.get(normalize(f["topic"]), []))]
         if len(matches) != 1:
@@ -147,8 +147,8 @@ class RuleAgent:
         faq = matches[0]
         # A partial ingredients list cannot answer presence/absence of a named ingredient.
         if normalize(faq["topic"]) == "thanh phan cong bo" and any(contains(t, q) for q in ["có", "không"]) and not any(contains(t, q) for q in ["gì", "nào", "danh sách", "liệt kê"]):
-            return dict(result, reason="Danh sách thành phần minh họa không đủ xác định chất cụ thể.")
-        return dict(result, route="AUTO", product_id=product, faq_id=faq["faq_id"], reason="Khớp FAQ trong chế độ luật.")
+            return dict(result, reason="The sample ingredient list cannot verify a specific substance.")
+        return dict(result, route="AUTO", product_id=product, faq_id=faq["faq_id"], reason="Matched an approved FAQ.")
 
 
 class GeminiAgent:
@@ -206,16 +206,16 @@ class GeminiAgent:
         decisions = parsed.get("decisions") if isinstance(parsed, dict) else None
         expected_ids = [comment["comment_id"] for comment in comments]
         if not isinstance(decisions, list) or len(decisions) != len(expected_ids):
-            raise ValueError("Gemini trả về thiếu hoặc thừa quyết định trong lô.")
+            raise ValueError("Gemini returned the wrong number of batch decisions.")
 
         by_id = {}
         for decision in decisions:
             if not isinstance(decision, dict):
-                raise ValueError("Gemini trả về quyết định không hợp lệ trong lô.")
+                raise ValueError("Gemini returned an invalid batch decision.")
             comment_id = decision.get("comment_id")
             if comment_id not in expected_ids or comment_id in by_id:
-                raise ValueError("Gemini trả về comment_id không hợp lệ trong lô.")
+                raise ValueError("Gemini returned an invalid comment_id in the batch.")
             by_id[comment_id] = decision
         if set(by_id) != set(expected_ids):
-            raise ValueError("Gemini chưa phân loại đủ comment trong lô.")
+            raise ValueError("Gemini did not classify every comment in the batch.")
         return [by_id[comment_id] for comment_id in expected_ids]

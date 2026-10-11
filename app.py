@@ -128,8 +128,11 @@ if 'scene_sessions' not in st.session_state:
 elif any(session.get('mode') != default_mode for session in st.session_state.scene_sessions.values()):
     # Clear results created by the old rule-mode UI so they cannot appear as Gemini output.
     st.session_state.scene_sessions = {name: new_session(default_mode, model) for name in SCENES}
-if 'scene_choice' not in st.session_state:
-    st.session_state.scene_choice = next(iter(SCENES))
+# Make the full-session inbox the landing view for new visitors and for the
+# first rerun after this deployment, while keeping later user selections.
+if st.session_state.get('landing_scene_version') != 'full-session-first-v1':
+    st.session_state.scene_choice = 'Phiên đầy đủ'
+    st.session_state.landing_scene_version = 'full-session-first-v1'
 if 'sidebar_open' not in st.session_state:
     st.session_state.sidebar_open = True
 
@@ -165,7 +168,8 @@ with st.sidebar:
     st.html(f'''<div class="brand-lockup"><img class="brand-photo" src="data:image/png;base64,{mascot}" alt="Mascot AI TakaAI" />
       <span><strong>TakaAI</strong><small>HỘP THƯ VẬN HÀNH</small></span></div>''')
     st.html('<div class="sidebar-section-label">KỊCH BẢN</div>')
-    st.radio('Chọn kịch bản', list(SCENES), format_func=lambda value: {
+    scene_order = ['Phiên đầy đủ', *[name for name in SCENES if name != 'Phiên đầy đủ']]
+    st.radio('Chọn kịch bản', scene_order, format_func=lambda value: {
         '01 · Gom FAQ': 'Gom câu hỏi',
         '02 · Moderator': 'Cần người hỗ trợ',
         '03 · Hỏi tiếp': 'Theo dõi hỏi tiếp',

@@ -1,7 +1,19 @@
 """Escaped, read-only markup for the TakaAI operations inbox."""
 
-from presentation import clock_text, e, faq_topic_label
+from presentation import clock_text, e
 from workflow import AI_REPLIED, MOD_REPLIED, MOD_WAITING, MOD_WORKING, is_overdue
+
+
+FAQ_TOPIC_LABELS = {
+    "Thành phần công bố": "Listed ingredients",
+    "Chỉ số SPF trên nhãn": "Label SPF",
+    "Dung tích": "Volume",
+    "Combo ưu đãi": "Combo offer",
+}
+
+
+def faq_topic_label(topic):
+    return FAQ_TOPIC_LABELS.get(topic, topic)
 
 
 def status_view(record, state, policy):

@@ -11,13 +11,29 @@ from data_loader import load_bundle
 from inbox_ui import chip, context_markup, conversation_markup, host_hint_markup, status_view
 from viewer_live_ui import buyer_phone_markup, format_vnd
 from presentation import (SCENES, activity_trend_markup, classification_summary_markup,
-                          clock_text, dashboard_metrics, e, faq_topic_label, product_label, prepare_scene,
+                          clock_text, dashboard_metrics, e, prepare_scene,
                           routing_breakdown_markup, scene_bundle)
 from replay import advance_time, load_next, new_session
 from workflow import AI_REPLIED, MOD_WAITING, MOD_WORKING, claim, host_prompts, is_overdue, moderator_reply, process_comment, refer
 
 
 ROOT = Path(__file__).resolve().parent
+FAQ_TOPIC_LABELS = {
+    "Thành phần công bố": "Listed ingredients",
+    "Chỉ số SPF trên nhãn": "Label SPF",
+    "Dung tích": "Volume",
+    "Combo ưu đãi": "Combo offer",
+}
+
+
+def faq_topic_label(topic):
+    return FAQ_TOPIC_LABELS.get(topic, topic)
+
+
+def product_label(product_id, name):
+    return "Sunscreen B" if product_id == "SUN_B" else name.split(" — ")[0]
+
+
 st.set_page_config(page_title="TakaAI · LIVE Dashboard", layout="wide", initial_sidebar_state="expanded")
 st.html('<style>' + (ROOT / 'dashboard.css').read_text(encoding='utf-8-sig') + '</style>')
 

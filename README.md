@@ -17,7 +17,7 @@ $env:TMP = $env:TEMP
 .\.venv\Scripts\python.exe -m streamlit run app.py --server.port 8503
 ```
 
-Mở http://localhost:8503. Dừng bằng Ctrl+C. Không cần Activate.ps1. Nếu không có `py`, dùng `python -m venv .venv`.
+Mở địa chỉ local mà Streamlit hiển thị trong terminal. Dừng bằng Ctrl+C. Không cần Activate.ps1. Nếu không có `py`, dùng `python -m venv .venv`.
 
 App luôn dùng **Gemini API**; giao diện không có lựa chọn chuyển sang chế độ luật. Nếu chưa có key, trạng thái sẽ ghi **Chưa kết nối Gemini** và app chặn chạy kịch bản. Nhập key trong **Cấu hình** hoặc đặt biến môi trường, rồi bấm **Chạy kịch bản**.
 
